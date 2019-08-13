@@ -14,14 +14,14 @@ async function createCheck(client : github.GitHub) {
 }
 
 function eslint() {
+  const workspace = process.env['GITHUB_WORKSPACE'] || '';
   const eslint = require('eslint');
 
   const cli = new eslint.CLIEngine();
-  const report = cli.executeOnFiles(['.']);
+  const report = cli.executeOnFiles([workspace || '.']);
 
   const { results, errorCount, warningCount } = report;
   const levels : ['notice', 'warning', 'failure'] = ['notice', 'warning', 'failure'];
-  const workspace = process.env['GITHUB_WORKSPACE'] || '';
 
   const annotations : Array<Octokit.ChecksUpdateParamsOutputAnnotations> = [];
   for (const result of results) {
