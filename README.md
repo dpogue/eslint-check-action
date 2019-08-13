@@ -1,9 +1,25 @@
-# JavaScript Action Template
+# ESLint Check Action
 
-This template offers an easy way to get started writing a javascript action with TypeScript compile time support, unit testing with Jest and using the GitHub Actions Toolkit.
+Run ESLint as part of a GitHub workflow. This action will also annotate the
+diff with the errors and warnings reported by ESLint.
 
-## Getting Started
+## Usage
 
-See the walkthrough located [here](https://github.com/actions/toolkit/blob/master/docs/javascript-action.md).
+```
+name: "Lint"
 
-In addition to walking your through how to create an action, it also provides strategies for versioning, releasing and referencing your actions.
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: npm install
+        run: npm install
+
+      - uses: dpogue/eslint-check-action@v1.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+You can run this in parallel with your tests by making use of multiple jobs.

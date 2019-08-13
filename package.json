@@ -1,8 +1,8 @@
 {
-  "name": "node12-template-action",
+  "name": "eslint-check-action",
   "version": "0.0.0",
   "private": true,
-  "description": "Node 12 template action",
+  "description": "Run eslint in a GitHub workflow and report any warnings using the Checks API",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -10,14 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/node12-template.git"
+    "url": "git+https://github.com/dpogue/eslint-check-action.git"
   },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "eslint",
+    "checks api"
   ],
-  "author": "GitHub",
+  "author": "Darryl Pogue <darryl@dpogue.ca>",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.0.0",
