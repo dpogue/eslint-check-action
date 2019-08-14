@@ -18,14 +18,17 @@ async function eslint() {
   const workspace = process.env['GITHUB_WORKSPACE'] || '';
   let jsonBuffer = '';
 
-  await exec.exec('npx', ['--no-install', 'eslint', '--format json', '.'], {
-    cwd: workspace,
-    listeners: {
-      stdout: (data : Buffer) => {
-        jsonBuffer += data.toString();
+  try {
+    await exec.exec('npx --no-install eslint --format json .', [], {
+      cwd: workspace,
+      silent: true,
+      listeners: {
+        stdout: (data : Buffer) => {
+          jsonBuffer += data.toString();
+        }
       }
-    }
-  });
+    });
+  } catch(e) { }
 
   const levels : ['notice', 'warning', 'failure'] = ['notice', 'warning', 'failure'];
   const annotations : Array<Octokit.ChecksUpdateParamsOutputAnnotations> = [];
@@ -65,6 +68,8 @@ async function eslint() {
 
 
 async function updateCheck(client : github.GitHub, check_id : number, conclusion : string, output : any) {
+  core.warning(`Updating the checks API with status ${conclusion}`);
+
   return client.checks.update({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
