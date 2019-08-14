@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import * as github from '@actions/github';
 import * as Octokit from '@octokit/rest';
 
@@ -13,20 +14,31 @@ async function createCheck(client : github.GitHub) {
   });
 }
 
-function eslint() {
+async function eslint() {
   const workspace = process.env['GITHUB_WORKSPACE'] || '';
-  const eslint = require('eslint');
+  let jsonBuffer = '';
 
-  const cli = new eslint.CLIEngine();
-  const report = cli.executeOnFiles([workspace || '.']);
+  await exec.exec('npx', ['--no-install', 'eslint', '--format json', '.'], {
+    cwd: workspace,
+    listeners: {
+      stdout: (data : Buffer) => {
+        jsonBuffer += data.toString();
+      }
+    }
+  });
 
-  const { results, errorCount, warningCount } = report;
   const levels : ['notice', 'warning', 'failure'] = ['notice', 'warning', 'failure'];
-
   const annotations : Array<Octokit.ChecksUpdateParamsOutputAnnotations> = [];
-  for (const result of results) {
-    const { filePath, messages } = result;
+  const report = JSON.parse(jsonBuffer);
+  let errors = 0;
+  let warnings = 0;
+
+  for (const result of report) {
+    const { filePath, messages, errorCount, warningCount } = result;
     const path = filePath.substring(workspace.length + 1);
+
+    errors += errorCount;
+    warnings += warningCount;
 
     for (const msg of messages) {
       const { line, severity, ruleId, message } = msg;
@@ -42,10 +54,10 @@ function eslint() {
   }
 
   return {
-    conclusion: errorCount > 0 ? 'failure' : 'success',
+    conclusion: errors > 0 ? 'failure' : 'success',
     output: {
       title: github.context.action,
-      summary: `${errorCount} error(s), ${warningCount} warning(s) found`,
+      summary: `${errors} error(s), ${warnings} warning(s) found`,
       annotations
     }
   };
@@ -71,7 +83,7 @@ async function run() {
 
     const check = await createCheck(client);
 
-    const { conclusion, output } = eslint();
+    const { conclusion, output } = await eslint();
 
     await updateCheck(client, check.data.id, conclusion, output);
 

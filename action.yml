@@ -1,6 +1,9 @@
 name: 'ESLint'
 description: 'Action to run ESLint and report warnings using the Checks API'
 author: 'Darryl Pogue'
+branding:
+  icon: 'code'
+  color: 'purple'
 inputs:
   repo-token:
     description: 'Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN }}'
