@@ -46,6 +46,13 @@ async function eslint() {
     for (const msg of messages) {
       const { line, severity, ruleId, message } = msg;
       const annotationLevel = levels[severity];
+
+      if (severity === 1) {
+        core.warning(`${path}\n\t${line} warning: ${message}`);
+      } else if (severity === 2) {
+        core.error(`${path}\n\t${line} error: ${message}`);
+      }
+
       annotations.push({
         path: path,
         start_line: line,
@@ -68,7 +75,7 @@ async function eslint() {
 
 
 async function updateCheck(client : github.GitHub, check_id : number, conclusion : string, output : any) {
-  core.warning(`Updating the checks API with status ${conclusion}`);
+  core.warning(JSON.stringify(output));
 
   return client.checks.update({
     owner: github.context.repo.owner,
