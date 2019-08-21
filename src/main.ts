@@ -48,9 +48,9 @@ async function eslint() {
       const annotationLevel = levels[severity];
 
       if (severity === 1) {
-        core.warning(`${path}\n\t${line} warning: ${message}`);
+        core.warning(`${path}\n\t${line}  warning:  ${message}  [${ruleId}]`);
       } else if (severity === 2) {
-        core.error(`${path}\n\t${line} error: ${message}`);
+        core.error(`${path}\n\t${line}  error:  ${message}  [${ruleId}]`);
       }
 
       annotations.push({
