@@ -8,7 +8,7 @@ async function createCheck(client : github.GitHub) {
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
     head_sha: github.context.sha,
-    name: github.context.action,
+    name: 'ESLint',
     status: 'in_progress',
     started_at: (new Date()).toISOString()
   });
@@ -66,7 +66,7 @@ async function eslint() {
   return {
     conclusion: errors > 0 ? 'failure' : 'success',
     output: {
-      title: github.context.action,
+      title: 'ESLint',
       summary: `${errors} error(s), ${warnings} warning(s) found`,
       annotations
     }
